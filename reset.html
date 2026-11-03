@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Change Password | Ban Oudomphong Farm Stay</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="auth-page admin-theme">
+
+  <div class="auth-card">
+    <a href="index.html" class="auth-logo"><strong>Ban Oudomphong</strong><small>Owner Portal</small></a>
+
+    <form id="resetForm" class="auth-form" autocomplete="off">
+      <h1>Change Password</h1>
+      <div class="tabs" role="tablist">
+        <button type="button" class="tab active" data-mode="old">I know my old password</button>
+        <button type="button" class="tab" data-mode="key">Use recovery key</button>
+      </div>
+      <label id="oldWrap">Old Password<input id="rOld" type="password" autocomplete="new-password"></label>
+      <label id="keyWrap" hidden>Recovery Key<input id="rKey" type="password" autocomplete="new-password"></label>
+      <label>New Password<input id="rNew" type="password" autocomplete="new-password" required minlength="6"></label>
+      <label>Confirm New Password<input id="rNew2" type="password" autocomplete="new-password" required minlength="6"></label>
+      <p class="error" id="resetError"></p>
+      <p class="success" id="resetOk"></p>
+      <button type="submit" class="btn btn-wide">Save New Password</button>
+      <a class="link-btn center" href="login.html">Back to sign in</a>
+    </form>
+  </div>
+
+  <script src="store.js"></script>
+  <script>
+    const $ = id => document.getElementById(id);
+    const clearAll = () => ['rOld', 'rKey', 'rNew', 'rNew2'].forEach(id => $(id).value = '');
+    window.addEventListener('pageshow', clearAll);
+
+    // Two ways to reset: old password, or recovery key
+    let mode = 'old';
+    document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+      mode = t.dataset.mode;
+      document.querySelectorAll('.tab').forEach(x => x.classList.toggle('active', x === t));
+      $('oldWrap').hidden = mode !== 'old';
+      $('keyWrap').hidden = mode !== 'key';
+      $('resetError').textContent = '';
+    }));
+
+    $('resetForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      $('resetError').textContent = ''; $('resetOk').textContent = '';
+      if (mode === 'old' && !(await checkPassword($('rOld').value)))
+        return $('resetError').textContent = 'Old password is incorrect. If you have forgotten it, use the recovery key.';
+      if (mode === 'key' && $('rKey').value !== RECOVERY_KEY)
+        return $('resetError').textContent = 'Recovery key is incorrect.';
+      if ($('rNew').value.length < 6) return $('resetError').textContent = 'New password must be at least 6 characters.';
+      if ($('rNew').value !== $('rNew2').value) return $('resetError').textContent = 'New passwords do not match.';
+      await setPassword($('rNew').value, mode === 'old' ? 'using old password' : 'using recovery key');
+      clearAll();
+      $('resetOk').textContent = 'Password changed. Taking you back to sign in…';
+      setTimeout(() => location.replace('login.html'), 1500);
+    });
+  </script>
+</body>
+</html>

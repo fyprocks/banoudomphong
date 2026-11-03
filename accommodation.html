@@ -32,20 +32,24 @@
         </div>
       </div>
       <div>
-        <span class="eyebrow">Farm Stay Room</span>
+        <span class="eyebrow">Our Rooms</span>
         <h2>Comfort in the Countryside</h2>
         <p>Each of our rooms is thoughtfully kept, with classic wooden furniture, a private bathroom
            with hot water, and a calm outlook over the gardens and farm. It is the ideal base for
            couples, friends and solo travellers.</p>
-        <p>All rooms share the same standard and the same fair rate, so every guest enjoys the same
-           level of comfort.</p>
+        <p>Choose between two room types, with two rooms of each. Every room sleeps up to four
+           guests, including children.</p>
 
+        <!-- Rates are filled in automatically from the owner's admin page (data-rate) -->
         <div class="rate-box">
-          <span class="label">Nightly Rate</span>
-          <div class="rate">THB 2,000 <small>per room / night</small></div>
-          <p style="color:var(--muted); font-size:.92rem">Rates in Thai Baht. Please contact us for longer stays and group bookings.</p>
+          <span class="label">Room 1 · Two Single Beds</span>
+          <div class="rate"><span data-rate="single">THB 2,000</span> <small>per room / night</small></div>
+          <span class="label" style="display:block; margin-top:22px">Room 2 · Twin Beds</span>
+          <div class="rate"><span data-rate="twin">THB 2,500</span> <small>per room / night</small></div>
+          <p style="color:var(--muted); font-size:.92rem; margin-top:14px">Standard rates in Thai Baht, room only; seasonal rates may apply. Up to 4 guests per room.<br>
+             Cancellation: 20% fee more than 24 hours before check-in; 100% within 24 hours.</p>
         </div>
-        <a href="index.html#contact" class="btn">Check Availability</a>
+        <a href="book.html" class="btn">Check Availability</a>
       </div>
     </div>
   </section>
@@ -88,8 +92,8 @@
       <!-- Edit to match your policies -->
       <div class="policies">
         <div><h4>Check-in / Check-out</h4><p>Check-in from 2:00 PM<br>Check-out by 12:00 PM</p></div>
-        <div><h4>Reservations</h4><p>Book by phone or WhatsApp. We confirm every reservation personally.</p></div>
-        <div><h4>Payment</h4><p>Payment details are provided when your booking is confirmed.</p></div>
+        <div><h4>Reservations</h4><p>Book online, by phone or on WhatsApp.</p></div>
+        <div><h4>Cancellation</h4><p>20% fee if cancelled more than 24 hours before check-in. 100% within 24 hours or for a no-show.</p></div>
       </div>
     </div>
   </section>
@@ -98,10 +102,11 @@
     <span class="eyebrow">Reservations</span>
     <h2>Your Countryside Escape Awaits</h2>
     <p>Call +66 96 195 6282 or send us a request online.</p>
-    <a href="index.html#contact" class="btn">Reserve Now</a>
+    <a href="book.html" class="btn">Reserve Now</a>
   </section>
 
   <div id="site-footer"></div>
+  <script src="store.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

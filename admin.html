@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Admin | Ban Oudomphong Farm Stay</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="store.js"></script>
+  <script>if (!isLoggedIn()) location.replace('login.html');</script>
+</head>
+<body class="admin-page admin-theme">
+
+  <header class="admin-top">
+    <a href="index.html" class="auth-logo"><strong>Ban Oudomphong</strong><small>Owner Portal</small></a>
+    <span class="admin-badge">Admin Mode</span>
+    <nav class="admin-tabs" id="adminTabs">
+      <button data-tab="summary" class="active">Summary</button>
+      <button data-tab="bookings">Bookings</button>
+      <button data-tab="add">Add Booking</button>
+      <button data-tab="log">Activity Log</button>
+      <button data-tab="rates">Room Rates</button>
+      <button data-tab="account">Account</button>
+    </nav>
+    <a href="index.html" class="btn btn-ghost btn-sm">View Website</a>
+    <button class="btn btn-ghost btn-sm" id="logout">Sign Out</button>
+  </header>
+
+  <main class="admin-main">
+    <p class="admin-warning">Bookings are saved in this browser only. Guests' online bookings appear here when this page is opened on the same device. See the note in store.js about connecting a database.</p>
+
+    <!-- ===== SUMMARY ===== -->
+    <section class="tab-panel" id="tab-summary">
+      <h2>Summary</h2>
+      <div class="kpis" id="kpis"></div>
+
+      <div class="cal-head">
+        <h3>Availability Calendar</h3>
+        <div class="cal-nav">
+          <button class="btn btn-line btn-sm" id="calPrev">‹ Prev</button>
+          <select id="calMonth"></select>
+          <button class="btn btn-line btn-sm" id="calNext">Next ›</button>
+        </div>
+        <div class="cal-legend">
+          <span><i class="free"></i>2 rooms free</span>
+          <span><i class="part"></i>1 room free</span>
+          <span><i class="full"></i>Fully booked</span>
+        </div>
+      </div>
+      <div class="cal-grid" id="calendars"></div>
+      <div id="dayDetail"></div>
+
+      <div class="admin-cols">
+        <div>
+          <h3>Booking Requests to Confirm</h3>
+          <div id="pendingList"></div>
+          <h3>Arrivals: Next 7 Days</h3>
+          <div id="arrivals"></div>
+        </div>
+        <div>
+          <h3>Where Guests Come From</h3>
+          <div id="countries"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== BOOKINGS ===== -->
+    <section class="tab-panel" id="tab-bookings" hidden>
+      <div class="panel-head">
+        <h2>All Bookings</h2>
+        <div class="filters">
+          <input id="fSearch" placeholder="Search name, ref, phone, country…">
+          <select id="fStatus">
+            <option value="">All statuses</option><option value="pending">Requests (pending)</option>
+            <option value="confirmed">Confirmed</option><option value="cancelled">Cancelled</option>
+          </select>
+          <button class="btn btn-line btn-sm" id="exportCsv">Export CSV</button>
+        </div>
+      </div>
+      <div class="table-wrap"><table class="data" id="bookingsTable"></table></div>
+    </section>
+
+    <!-- ===== ADD BOOKING ===== -->
+    <section class="tab-panel" id="tab-add" hidden>
+      <h2>Add a Booking</h2>
+      <p class="muted">For phone, WhatsApp or walk-in guests. Availability and price are checked automatically.</p>
+      <form id="addForm" class="admin-form">
+        <label>Check-in<input type="date" id="aIn" required></label>
+        <label>Check-out<input type="date" id="aOut" required></label>
+        <label>Room 1 · Two Single Beds<select id="aSingle"><option>0</option><option>1</option><option>2</option></select></label>
+        <label>Room 2 · Twin Beds<select id="aTwin"><option>0</option><option>1</option><option>2</option></select></label>
+        <label>Adults<input type="number" id="aAdults" min="1" max="16" value="2" required></label>
+        <label>Children<input type="number" id="aChildren" min="0" max="15" value="0" required></label>
+        <label>First Name<input id="aFirst" required></label>
+        <label>Last Name<input id="aLast" required></label>
+        <label>Phone<input id="aPhone" required></label>
+        <label>Email<input id="aEmail" type="email"></label>
+        <label class="full">Country<input id="aCountry" placeholder="e.g. Thailand"></label>
+        <label class="full">Notes<textarea id="aNotes" rows="2"></textarea></label>
+        <p class="full muted" id="aAvail"></p>
+        <p class="full error" id="aError"></p>
+        <p class="full success" id="aOk"></p>
+        <div class="full"><button class="btn" type="submit">Add Booking</button></div>
+      </form>
+    </section>
+
+    <!-- ===== ACTIVITY LOG ===== -->
+    <section class="tab-panel" id="tab-log" hidden>
+      <h2>Activity Log</h2>
+      <p class="muted">Every booking request, confirmation, cancellation, rate change and password change is recorded here.</p>
+      <div class="table-wrap"><table class="data" id="logTable"></table></div>
+    </section>
+
+    <!-- ===== RATES ===== -->
+    <section class="tab-panel" id="tab-rates" hidden>
+      <h2>Room Rates</h2>
+
+      <h3>Standard Rates</h3>
+      <p class="muted">Used on every date that does not have a date-range rate below.</p>
+      <form id="baseRatesForm" class="admin-form"></form>
+      <p class="success" id="baseOk"></p>
+
+      <h3>Date-Range Rates</h3>
+      <p class="muted">Set a different price from one date to another (e.g. high season, holidays). Dates are nights stayed, both dates included.
+         If ranges overlap, the one added last is used. Existing bookings keep the price they were booked at.</p>
+      <form id="periodForm" class="admin-form period-form">
+        <label>From (first night)<input type="date" id="pFrom" required></label>
+        <label>To (last night)<input type="date" id="pTo" required></label>
+        <label>Room 1 · Two Single Beds (THB)<input type="number" id="pSingle" min="0" step="50" required></label>
+        <label>Room 2 · Twin Beds (THB)<input type="number" id="pTwin" min="0" step="50" required></label>
+        <label class="full">Label (optional)<input id="pLabel" placeholder="e.g. High season, New Year"></label>
+        <p class="full error" id="pError"></p>
+        <div class="full"><button class="btn" type="submit">Add Date-Range Rate</button></div>
+      </form>
+      <div class="table-wrap" style="margin-top:20px"><table class="data" id="periodsTable"></table></div>
+
+      <h3>Rate Check</h3>
+      <form id="rateCheck" class="filters">
+        <input type="date" id="rcDate" required>
+        <button class="btn btn-line btn-sm" type="submit">Show Price for This Night</button>
+        <span id="rcOut" class="muted"></span>
+      </form>
+    </section>
+
+    <!-- ===== ACCOUNT ===== -->
+    <section class="tab-panel" id="tab-account" hidden>
+      <h2>Change Password</h2>
+      <form id="pwForm" class="admin-form narrow-form" autocomplete="off">
+        <label class="full">Old Password<input type="password" id="pOld" autocomplete="new-password" required></label>
+        <label class="full">New Password<input type="password" id="pNew" autocomplete="new-password" required minlength="6"></label>
+        <label class="full">Confirm New Password<input type="password" id="pNew2" autocomplete="new-password" required minlength="6"></label>
+        <p class="full error" id="pwError"></p>
+        <p class="full success" id="pwOk"></p>
+        <div class="full"><button class="btn" type="submit">Update Password</button></div>
+      </form>
+    </section>
+  </main>
+
+  <!-- Booking details pop-up -->
+  <div class="modal" id="modal" hidden>
+    <div class="modal-card">
+      <button class="modal-close" id="modalClose" aria-label="Close">&times;</button>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>

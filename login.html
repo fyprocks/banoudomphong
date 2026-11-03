@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Owner Login | Ban Oudomphong Farm Stay</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="auth-page admin-theme">
+
+  <div class="auth-card">
+    <a href="index.html" class="auth-logo"><strong>Ban Oudomphong</strong><small>Owner Portal</small></a>
+
+    <!-- autocomplete="off" / "new-password" stop the browser filling in or remembering the password -->
+    <form id="loginForm" class="auth-form" autocomplete="off">
+      <h1>Sign In</h1>
+      <label>Username<input id="lUser" name="owner-user" autocomplete="off" autocapitalize="off" spellcheck="false" required></label>
+      <label>Password<input id="lPass" name="owner-pass" type="password" autocomplete="new-password" required></label>
+      <p class="error" id="loginError"></p>
+      <button type="submit" class="btn btn-wide">Sign In</button>
+      <a class="link-btn center" href="reset.html">Forgot password?</a>
+    </form>
+  </div>
+
+  <script src="store.js"></script>
+  <script>
+    const $ = id => document.getElementById(id);
+    if (isLoggedIn()) location.replace('admin.html');
+    // Always start with empty fields (in case the browser tried to fill them)
+    window.addEventListener('pageshow', () => { $('lUser').value = ''; $('lPass').value = ''; });
+
+    $('loginForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const ok = $('lUser').value.trim().toLowerCase() === ADMIN_USER && await checkPassword($('lPass').value);
+      $('lPass').value = '';
+      if (!ok) { $('loginError').textContent = 'Incorrect username or password.'; return; }
+      setLoggedIn(true);
+      location.replace('admin.html');
+    });
+  </script>
+</body>
+</html>

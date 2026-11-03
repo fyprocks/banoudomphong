@@ -19,7 +19,7 @@
       <h1>A Countryside Retreat in the Heart of Isan</h1>
       <p>Open skies, a tranquil lake and genuine Thai hospitality, just fifteen minutes from the city.</p>
       <div class="hero-buttons">
-        <a href="#contact" class="btn">Reserve Your Stay</a>
+        <a href="book.html" class="btn">Reserve Your Stay</a>
         <a href="accommodation.html" class="btn btn-ghost">Explore Accommodation</a>
       </div>
     </div>
@@ -30,7 +30,7 @@
   <section class="section">
     <div class="container split">
       <div class="split-img tall">
-        <!-- Add your hotel photo as nature/hotel.jpg -->
+        <!-- Hotel photo -->
         <img class="zoom" src="nature/hotel1.JPG" alt="Ban Oudomphong Farm Stay">
       </div>
       <div>
@@ -205,7 +205,7 @@
       <div>
         <span class="eyebrow">Reservations</span>
         <h2>Plan Your Stay</h2>
-        <p>Send us your dates and we will confirm availability personally. We speak Thai and English.</p>
+        <p>Choose your dates to see available rooms and book instantly. We speak Thai and English.</p>
         <ul class="contact-list">
           <li><span>Telephone</span><a href="tel:+66961956282">+66 96 195 6282</a></li>
           <li><span>WhatsApp</span><a href="https://wa.me/66961956282" target="_blank">Message Us</a></li>
@@ -213,26 +213,31 @@
         </ul>
       </div>
 
-      <!-- Submitting opens WhatsApp with the booking details filled in -->
-      <form id="bookingForm" class="form">
-        <label>Full Name<input type="text" id="name" required></label>
-        <label>Phone / WhatsApp<input type="tel" id="phone" required></label>
+      <!-- Quick search: sends the guest to the booking page with these details filled in -->
+      <form id="quickSearch" class="form">
         <div class="row">
-          <label>Check-in<input type="date" id="checkin" required></label>
-          <label>Check-out<input type="date" id="checkout" required></label>
+          <label>Check-in<input type="date" id="qIn" required></label>
+          <label>Check-out<input type="date" id="qOut" required></label>
         </div>
-        <label>Guests
-          <select id="guests"><option>1</option><option selected>2</option><option>3</option><option>4</option></select>
+        <div class="row">
+          <label>Rooms
+            <select id="qRooms"><option>1</option><option>2</option><option>3</option><option>4</option></select>
+          </label>
+          <label>Adults
+            <select id="qAdults"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select>
+          </label>
+        </div>
+        <label>Children
+          <select id="qChildren"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select>
         </label>
-        <label>Special Requests<textarea id="message" rows="2" placeholder="Airport transfer, ATV, boating, fishing…"></textarea></label>
-        <p id="totalPrice" class="total"></p>
-        <div><button type="submit" class="btn">Request Reservation</button></div>
-        <p id="formMsg" class="form-msg"></p>
+        <div><button type="submit" class="btn">Check Availability</button></div>
+        <p class="small-note" style="color:#cfc8bb">Maximum 4 guests per room, including children.</p>
       </form>
     </div>
   </section>
 
   <div id="site-footer"></div>
+  <script src="store.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

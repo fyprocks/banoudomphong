@@ -5,7 +5,6 @@
    ========================================================= */
 
 // ---------- Settings ----------
-const PRICE_PER_NIGHT = 2000;          // Thai baht per room per night
 const PHONE_DISPLAY   = '+66 96 195 6282';
 const PHONE_LINK      = '+66961956282';
 const WHATSAPP_NUMBER = '66961956282'; // country code + number, no "+" or spaces
@@ -24,7 +23,7 @@ if (header) {
         <li><a href="dining.html">Dining</a></li>
         <li><a href="experiences.html">Experiences</a></li>
         <li><a href="gallery.html">Gallery</a></li>
-        <li><a href="index.html#contact" class="nav-book">Reserve</a></li>
+        <li><a href="book.html" class="nav-book">Reserve</a></li>
       </ul>
     </nav>
     <button class="menu-toggle" id="menuToggle" aria-label="Open menu">&#9776;</button>
@@ -48,6 +47,7 @@ if (footer) {
           <li><a href="dining.html">Restaurant &amp; Dining</a></li>
           <li><a href="experiences.html">Experiences</a></li>
           <li><a href="gallery.html">Gallery</a></li>
+          <li><a href="book.html">Reserve a Room</a></li>
         </ul>
       </div>
       <div>
@@ -60,19 +60,26 @@ if (footer) {
         </ul>
       </div>
     </div>
-    <div class="footer-bottom">© ${new Date().getFullYear()} Ban Oudomphong Farm Stay. All rights reserved.</div>
+    <div class="footer-bottom">© ${new Date().getFullYear()} Ban Oudomphong Farm Stay. All rights reserved. · <a href="login.html">Owner Login</a></div>
   </footer>`;
 }
 
 // ---------- Highlight the current page in the menu ----------
 const currentPage = location.pathname.split('/').pop() || 'index.html';
+
+// ---------- Owner Login link in the top menu (home page only, for now) ----------
+if (currentPage === 'index.html') {
+  const nl = document.getElementById('navLinks');
+  if (nl) nl.insertAdjacentHTML('beforeend', '<li><a href="login.html" class="nav-owner">Owner Login</a></li>');
+}
 document.querySelectorAll('.nav-links a').forEach(a => {
   if (a.getAttribute('href') === currentPage) a.classList.add('active');
 });
 
 // ---------- Navbar turns white on scroll ----------
 const navbar = document.getElementById('navbar');
-const onScroll = () => navbar && navbar.classList.toggle('scrolled', window.scrollY > 60);
+const solidNav = document.body.classList.contains('solid-nav');   // pages without a big photo at the top
+const onScroll = () => navbar && navbar.classList.toggle('scrolled', solidNav || window.scrollY > 60);
 window.addEventListener('scroll', onScroll);
 onScroll();
 
@@ -110,40 +117,31 @@ document.getElementById('closeLightbox').addEventListener('click', closeLightbox
 lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
 
-// ---------- Booking form (Home page) → opens WhatsApp ----------
-const form = document.getElementById('bookingForm');
-if (form) {
-  const checkin = document.getElementById('checkin');
-  const checkout = document.getElementById('checkout');
-  const totalPrice = document.getElementById('totalPrice');
-  const formMsg = document.getElementById('formMsg');
-  checkin.min = new Date().toISOString().split('T')[0];
-
-  const getNights = () => {
-    if (!checkin.value || !checkout.value) return 0;
-    const d = (new Date(checkout.value) - new Date(checkin.value)) / 86400000;
-    return d > 0 ? d : 0;
-  };
-  const updateTotal = () => {
-    const n = getNights();
-    totalPrice.textContent = n ? `${n} night${n > 1 ? 's' : ''} · THB ${(n * PRICE_PER_NIGHT).toLocaleString()}` : '';
-  };
-  checkin.addEventListener('change', () => { checkout.min = checkin.value; updateTotal(); });
-  checkout.addEventListener('change', updateTotal);
-
-  form.addEventListener('submit', e => {
-    e.preventDefault();
-    const n = getNights();
-    if (!n) { formMsg.textContent = 'Please choose a check-out date after your check-in date.'; return; }
-    const text =
-      `Hello, I would like to reserve a stay at Ban Oudomphong Farm Stay.\n` +
-      `Name: ${document.getElementById('name').value}\n` +
-      `Phone: ${document.getElementById('phone').value}\n` +
-      `Check-in: ${checkin.value}\nCheck-out: ${checkout.value} (${n} night${n > 1 ? 's' : ''})\n` +
-      `Guests: ${document.getElementById('guests').value}\n` +
-      `Estimated total: THB ${(n * PRICE_PER_NIGHT).toLocaleString()}\n` +
-      `Message: ${document.getElementById('message').value}`;
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`, '_blank');
-    formMsg.textContent = 'Opening WhatsApp to send your request…';
+// ---------- Quick availability search (Home page) → opens book.html ----------
+const quick = document.getElementById('quickSearch');
+if (quick) {
+  const qi = document.getElementById('qIn'), qo = document.getElementById('qOut');
+  const t = new Date(); t.setMinutes(t.getMinutes() - t.getTimezoneOffset());
+  qi.min = t.toISOString().slice(0, 10);
+  qi.addEventListener('change', () => {
+    const d = new Date(qi.value + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + 1);
+    qo.min = d.toISOString().slice(0, 10);
+    if (!qo.value || qo.value <= qi.value) qo.value = qo.min;
   });
+  quick.addEventListener('submit', e => {
+    e.preventDefault();
+    const p = new URLSearchParams({
+      in: qi.value, out: qo.value,
+      rooms: document.getElementById('qRooms').value,
+      adults: document.getElementById('qAdults').value,
+      children: document.getElementById('qChildren').value
+    });
+    location.href = 'book.html?' + p.toString();
+  });
+}
+
+// ---------- Show live room rates on any element with data-rate="single" / "twin" ----------
+if (typeof getRates === 'function') {
+  const r = getRates();
+  document.querySelectorAll('[data-rate]').forEach(el => el.textContent = fmtTHB(r[el.dataset.rate]));
 }
